@@ -1,6 +1,7 @@
 package com.thesis.fixable.auth.config;
 
-import com.thesis.fixable.auth.services.AuthUserDetailsService;
+import com.thesis.fixable.auth.jwt.JwtTokenFilter;
+import com.thesis.fixable.auth.user.AuthUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -11,11 +12,18 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
 
 @EnableWebSecurity
 public class JwtConfig {
     @Autowired
     private AuthUserDetailsService userDetailsService;
+
+    @Autowired
+    private JwtTokenFilter jwtTokenFilter;
 
     @Bean
     public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
@@ -28,17 +36,33 @@ public class JwtConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http
-                .cors().disable().csrf().disable()
+                .cors().and().csrf().disable()
 
                 .authorizeHttpRequests()
-                .antMatchers("/signup-technician").permitAll()
-                .antMatchers("/signup-customer").permitAll()
+                .antMatchers("/technician/signup").permitAll()
+                .antMatchers("/customer/signup").permitAll()
                 .antMatchers("/login").permitAll()
+                .antMatchers("/error").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
+                .addFilterBefore(jwtTokenFilter,
+                        UsernamePasswordAuthenticationFilter.class)
                 .build();
+    }
+
+    @Bean
+    public CorsFilter corsFilter() {
+        UrlBasedCorsConfigurationSource source =
+                new UrlBasedCorsConfigurationSource();
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowCredentials(true);
+        config.addAllowedOriginPattern("*");
+        config.addAllowedHeader("*");
+        config.addAllowedMethod("*");
+        source.registerCorsConfiguration("/**", config);
+        return new CorsFilter(source);
     }
 
     @Bean

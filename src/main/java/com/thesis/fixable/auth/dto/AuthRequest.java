@@ -1,21 +1,34 @@
 package com.thesis.fixable.auth.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+
+@JsonInclude
 public class AuthRequest {
 
-    private String username;
+    @Email
+    @NotNull
+    @NotEmpty
+    private String email;
+
+    @NotEmpty
+    @NotEmpty
     private String password;
 
     public AuthRequest() {
     }
 
-    public AuthRequest(String username, String password) {
-        this.username = username;
+    public AuthRequest(String email, String password) {
+        this.email = email;
         this.password = password;
     }
 
 
-    public String getUsername() {
-        return username;
+    public String getEmail() {
+        return email;
     }
 
     public String getPassword() {
@@ -25,7 +38,7 @@ public class AuthRequest {
     @Override
     public String toString() {
         return "AuthRequest{" +
-                "username='" + username + '\'' +
+                "email='" + email + '\'' +
                 ", password='" + password + '\'' +
                 '}';
     }

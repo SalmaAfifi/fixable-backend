@@ -2,19 +2,27 @@ package com.thesis.fixable.auth.controllers;
 
 import com.thesis.fixable.auth.dto.AuthRequest;
 import com.thesis.fixable.auth.dto.TokenResponse;
-import com.thesis.fixable.auth.services.AuthUserDetailsService;
-import com.thesis.fixable.auth.util.JwtUtil;
+import com.thesis.fixable.auth.jwt.JwtUtil;
+import com.thesis.fixable.auth.user.AuthUserDetailsService;
+import com.thesis.fixable.auth.user.Role;
+import com.thesis.fixable.auth.user.UserEntity;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
+
 @RestController
-public class AuthController {
+public class LoginController {
+    private static final Logger LOGGER = LoggerFactory.getLogger(LoginController.class);
+
     @Autowired
     AuthenticationManager authenticationManager;
 
@@ -24,18 +32,21 @@ public class AuthController {
     @Autowired
     JwtUtil jwtUtil;
 
+    private static final UserEntity USER = new UserEntity("email@email.com", "password", Role.TECHNICIAN);
+
     @PostMapping("/login")
-    public ResponseEntity<TokenResponse> login(@RequestBody AuthRequest authRequest) {
-        authenticationManager.authenticate(
+    public ResponseEntity<TokenResponse> login(@RequestBody @Valid AuthRequest authRequest) {
+        authUserDetailsService.addUser(USER);
+        Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
-                        authRequest.getUsername(),
+                        authRequest.getEmail(),
                         authRequest.getPassword()
                 )
         );
-        UserDetails userDetails = authUserDetailsService.loadUserByUsername(authRequest.getUsername());
-        System.out.println(userDetails);
 
-        String token = jwtUtil.generateToken(userDetails);
+        LOGGER.info(authentication.toString());
+
+        String token = jwtUtil.generateToken(authentication);
 
         TokenResponse response = new TokenResponse(token);
 
