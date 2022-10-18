@@ -1,12 +1,10 @@
 package com.thesis.fixable.auth.dto;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
-@JsonInclude
 public class AuthRequest {
 
     @Email
@@ -14,8 +12,9 @@ public class AuthRequest {
     @NotEmpty
     private String email;
 
+    @NotNull
     @NotEmpty
-    @NotEmpty
+    @Size(min = 8)
     private String password;
 
     public AuthRequest() {

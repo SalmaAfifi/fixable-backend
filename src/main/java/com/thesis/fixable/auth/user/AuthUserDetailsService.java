@@ -1,17 +1,29 @@
 package com.thesis.fixable.auth.user;
 
+import com.thesis.fixable.customer.CustomerService;
+import com.thesis.fixable.exceptionshandling.exceptions.EmailAlreadyExistException;
+import com.thesis.fixable.exceptionshandling.exceptions.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 
 @Service
+@Transactional
 public class AuthUserDetailsService implements UserDetailsService {
 
+    private UserRepository userRepository;
+    private CustomerService customerService;
+
     @Autowired
-    UserRepository userRepository;
+    public AuthUserDetailsService(UserRepository userRepository, CustomerService customerService) {
+        this.userRepository = userRepository;
+        this.customerService = customerService;
+    }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -19,16 +31,43 @@ public class AuthUserDetailsService implements UserDetailsService {
     }
 
     public UserEntity loadUserByEmail(String email) throws UsernameNotFoundException {
-        UserEntity user = userRepository.findByEmail(email);
-        if (user == null) {
-            throw new UsernameNotFoundException(String.format("Email: %s does not exist", email));
-        }
-        return user;
+        return userRepository.findByEmail(email)
+                .orElseThrow(
+                        () -> new UsernameNotFoundException(String.format("Email: %s does not exist", email))
+                );
     }
 
     public UserEntity addUser(UserEntity userEntity) {
+        if (userRepository.existsByEmail(userEntity.getEmail()))
+            throw new EmailAlreadyExistException(String.format("Provide email %s already exist", userEntity.getEmail()));
         return userRepository.save(userEntity);
     }
 
+    public UserEntity getUserById(Long id) {
+        return userRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("User Does Not Exist"));
+    }
 
+    public UserEntity updatePassword(Long id, String password) {
+        if (userRepository.existsById(id)) {
+            userRepository.updatePassword(id, password);
+            return userRepository.findById(id).get();
+        }
+        throw new EntityNotFoundException("User Does Not Exist");
+    }
+
+    public void deleteUser(Long id) {
+        if (userRepository.existsById(id)) {
+            userRepository.deleteById(id);
+            return;
+        }
+        throw new EntityNotFoundException("User Does Not Exist");
+    }
+
+    public Long getIdByAuthentication(Authentication auth) {
+        UserEntity userEntity = userRepository.findByEmail(auth.getName()).orElseThrow(() -> new EntityNotFoundException("User Does Not Exist"));
+        if (userEntity.getRole() == Role.CUSTOMER) {
+            return customerService.getCustomerByEmail(userEntity.getEmail()).getId();
+        }
+        return null;
+    }
 }
