@@ -11,15 +11,15 @@ import java.util.List;
 import java.util.Objects;
 
 @Entity
-@Table(name = "USER_TABLE")
+@Table(name = "users")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class UserEntity implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private long id;
+    private Long id;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false, unique = true, updatable = false)
     private String email;
 
     @Column(nullable = false)
@@ -39,7 +39,7 @@ public class UserEntity implements UserDetails {
         this.role = role;
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 

@@ -1,11 +1,9 @@
 package com.thesis.fixable.auth.controllers;
 
 import com.thesis.fixable.auth.dto.AuthRequest;
-import com.thesis.fixable.auth.dto.TokenResponse;
+import com.thesis.fixable.auth.dto.LoginResponse;
 import com.thesis.fixable.auth.jwt.JwtUtil;
 import com.thesis.fixable.auth.user.AuthUserDetailsService;
-import com.thesis.fixable.auth.user.Role;
-import com.thesis.fixable.auth.user.UserEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,11 +30,8 @@ public class LoginController {
     @Autowired
     JwtUtil jwtUtil;
 
-    private static final UserEntity USER = new UserEntity("email@email.com", "password", Role.TECHNICIAN);
-
     @PostMapping("/login")
-    public ResponseEntity<TokenResponse> login(@RequestBody @Valid AuthRequest authRequest) {
-        authUserDetailsService.addUser(USER);
+    public ResponseEntity<LoginResponse> login(@RequestBody @Valid AuthRequest authRequest) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         authRequest.getEmail(),
@@ -48,7 +43,9 @@ public class LoginController {
 
         String token = jwtUtil.generateToken(authentication);
 
-        TokenResponse response = new TokenResponse(token);
+        Long id = authUserDetailsService.getIdByAuthentication(authentication);
+
+        LoginResponse response = new LoginResponse(token, id);
 
         return ResponseEntity.ok(response);
     }
