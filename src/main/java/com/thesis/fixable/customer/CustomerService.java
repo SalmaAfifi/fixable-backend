@@ -40,10 +40,11 @@ public class CustomerService {
     }
 
     public void deleteCustomer(Long id) {
-        if (customerRepository.existsById(id)) {
-            customerRepository.deleteById(id);
+        if (!customerRepository.existsById(id)) {
+            throw new EntityNotFoundException("Customer Does Not Exist");
         }
-        throw new EntityNotFoundException("Customer Does Not Exist");
+        customerRepository.deleteById(id);
+
     }
 
     public CustomerEntity getCustomerById(Long id) {
