@@ -3,6 +3,7 @@ package com.thesis.fixable.auth.user;
 import com.thesis.fixable.customer.CustomerService;
 import com.thesis.fixable.exceptionshandling.exceptions.EmailAlreadyExistException;
 import com.thesis.fixable.exceptionshandling.exceptions.EntityNotFoundException;
+import com.thesis.fixable.technician.TechnicianService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -16,13 +17,15 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class AuthUserDetailsService implements UserDetailsService {
 
-    private UserRepository userRepository;
-    private CustomerService customerService;
+    private final UserRepository userRepository;
+    private final CustomerService customerService;
+    private final TechnicianService technicianService;
 
     @Autowired
-    public AuthUserDetailsService(UserRepository userRepository, CustomerService customerService) {
+    public AuthUserDetailsService(UserRepository userRepository, CustomerService customerService, TechnicianService technicianService) {
         this.userRepository = userRepository;
         this.customerService = customerService;
+        this.technicianService = technicianService;
     }
 
     @Override
@@ -67,7 +70,9 @@ public class AuthUserDetailsService implements UserDetailsService {
         UserEntity userEntity = userRepository.findByEmail(auth.getName()).orElseThrow(() -> new EntityNotFoundException("User Does Not Exist"));
         if (userEntity.getRole() == Role.CUSTOMER) {
             return customerService.getCustomerByEmail(userEntity.getEmail()).getId();
+        } else if (userEntity.getRole() == Role.TECHNICIAN){
+            return technicianService.getTechnicianByEmail(userEntity.getEmail()).getId();
         }
-        return null;
+            return null;
     }
 }
