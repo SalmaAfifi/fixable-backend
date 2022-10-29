@@ -3,7 +3,7 @@ package com.thesis.fixable.technician;
 import com.thesis.fixable.auth.user.Role;
 import com.thesis.fixable.auth.user.UserEntity;
 
-final class Technicians {
+public final class Technicians {
 
     private final TechnicianEntity budapestCarpenter = new TechnicianEntity(
             "Budapest",

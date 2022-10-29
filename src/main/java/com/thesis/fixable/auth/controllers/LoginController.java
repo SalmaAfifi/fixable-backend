@@ -4,6 +4,7 @@ import com.thesis.fixable.auth.dto.AuthRequest;
 import com.thesis.fixable.auth.dto.LoginResponse;
 import com.thesis.fixable.auth.jwt.JwtUtil;
 import com.thesis.fixable.auth.user.AuthUserDetailsService;
+import com.thesis.fixable.auth.user.Role;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,7 +46,9 @@ public class LoginController {
 
         Long id = authUserDetailsService.getIdByAuthentication(authentication);
 
-        LoginResponse response = new LoginResponse(token, id);
+        Role role = authUserDetailsService.getRoleByAuthentication(authentication);
+
+        LoginResponse response = new LoginResponse(token, id, role);
 
         return ResponseEntity.ok(response);
     }

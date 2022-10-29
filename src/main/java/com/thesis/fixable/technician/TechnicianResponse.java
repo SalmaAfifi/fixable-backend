@@ -111,4 +111,56 @@ public class TechnicianResponse {
     public void setRegion(String region) {
         this.region = region;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof TechnicianResponse)) return false;
+
+        TechnicianResponse response = (TechnicianResponse) o;
+
+        if (getId() != null ? !getId().equals(response.getId()) : response.getId() != null) return false;
+        if (getFirstName() != null ? !getFirstName().equals(response.getFirstName()) : response.getFirstName() != null)
+            return false;
+        if (getLastName() != null ? !getLastName().equals(response.getLastName()) : response.getLastName() != null)
+            return false;
+        if (getPhoneNumber() != null ? !getPhoneNumber().equals(response.getPhoneNumber()) : response.getPhoneNumber() != null)
+            return false;
+        if (getEmail() != null ? !getEmail().equals(response.getEmail()) : response.getEmail() != null) return false;
+        if (getAvatar() != null ? !getAvatar().equals(response.getAvatar()) : response.getAvatar() != null)
+            return false;
+        if (getProfession() != response.getProfession()) return false;
+        if (getCountry() != null ? !getCountry().equals(response.getCountry()) : response.getCountry() != null)
+            return false;
+        return getRegion() != null ? getRegion().equals(response.getRegion()) : response.getRegion() == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = getId() != null ? getId().hashCode() : 0;
+        result = 31 * result + (getFirstName() != null ? getFirstName().hashCode() : 0);
+        result = 31 * result + (getLastName() != null ? getLastName().hashCode() : 0);
+        result = 31 * result + (getPhoneNumber() != null ? getPhoneNumber().hashCode() : 0);
+        result = 31 * result + (getEmail() != null ? getEmail().hashCode() : 0);
+        result = 31 * result + (getAvatar() != null ? getAvatar().hashCode() : 0);
+        result = 31 * result + (getProfession() != null ? getProfession().hashCode() : 0);
+        result = 31 * result + (getCountry() != null ? getCountry().hashCode() : 0);
+        result = 31 * result + (getRegion() != null ? getRegion().hashCode() : 0);
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return "TechnicianResponse{" +
+                "id=" + id +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", phoneNumber='" + phoneNumber + '\'' +
+                ", email='" + email + '\'' +
+                ", avatar='" + avatar + '\'' +
+                ", profession=" + profession +
+                ", country='" + country + '\'' +
+                ", region='" + region + '\'' +
+                '}';
+    }
 }
