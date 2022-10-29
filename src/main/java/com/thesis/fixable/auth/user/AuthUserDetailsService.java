@@ -67,12 +67,16 @@ public class AuthUserDetailsService implements UserDetailsService {
     }
 
     public Long getIdByAuthentication(Authentication auth) {
-        UserEntity userEntity = userRepository.findByEmail(auth.getName()).orElseThrow(() -> new EntityNotFoundException("User Does Not Exist"));
+        UserEntity userEntity = (UserEntity) auth.getPrincipal();
         if (userEntity.getRole() == Role.CUSTOMER) {
             return customerService.getCustomerByEmail(userEntity.getEmail()).getId();
         } else if (userEntity.getRole() == Role.TECHNICIAN){
             return technicianService.getTechnicianByEmail(userEntity.getEmail()).getId();
         }
             return null;
+    }
+    public Role getRoleByAuthentication(Authentication auth) {
+        UserEntity userEntity = (UserEntity) auth.getPrincipal();
+        return userEntity.getRole();
     }
 }

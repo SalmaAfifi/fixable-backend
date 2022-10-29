@@ -17,13 +17,13 @@ public class TestCustomerUtil {
     );
 
     static final String DTO_JSON = String.join(System.lineSeparator(),
-            "{\n",
-            "\"email\": \"email@email.com\",\n",
+            "{",
+            "\"email\": \"email@email.com\",",
             "\"password\": \"password\",\n",
-            "\"firstName\": \"first name\",\n",
-            "\"lastName\": \"last name\",\n",
-            "\"avatar\": \"url/avatar\",\n",
-            "\"phoneNumber\": \"+36 22 2222\"\n",
+            "\"firstName\": \"first name\",",
+            "\"lastName\": \"last name\",",
+            "\"avatar\": \"url/avatar\",",
+            "\"phoneNumber\": \"+36 22 2222\"",
             "}"
     );
 
